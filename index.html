@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dars Jadvali - KT 07-25</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .schedule-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .schedule-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .schedule-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .section-title {
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .day-schedule {
+            padding: 20px;
+        }
+
+        .day {
+            margin-bottom: 25px;
+            border-left: 4px solid transparent;
+            padding-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .day:nth-child(1) { border-left-color: #ff6b6b; }
+        .day:nth-child(2) { border-left-color: #4ecdc4; }
+        .day:nth-child(3) { border-left-color: #45b7d1; }
+
+        .day:hover {
+            background: linear-gradient(90deg, rgba(255, 107, 107, 0.05), transparent);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .day-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .day-name::before {
+            content: "📅";
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .lesson {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            margin: 8px 0;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-left: 3px solid #007bff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lesson::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .lesson:hover::before {
+            left: 100%;
+        }
+
+        .lesson:hover {
+            transform: translateX(5px);
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .lesson-time {
+            font-weight: 600;
+            color: #007bff;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .lesson:hover .lesson-time {
+            color: #fff;
+        }
+
+        .lesson-info {
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .lesson-subject {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .lesson-teacher {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .lesson:hover .lesson-teacher {
+            color: #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .schedule-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .header p {
+                font-size: 14px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        /* Loading animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .day {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .day:nth-child(1) { animation-delay: 0.1s; }
+        .day:nth-child(2) { animation-delay: 0.2s; }
+        .day:nth-child(3) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DARS JADVALI</h1>
+            <p><strong>Guruh:</strong> KT 07-25</p>
+            <p><strong>Yo'nalish:</strong> Dasturiy injiniringi</p>
+            <p><strong>Kasb:</strong> Kompyuter tizimlarida dasturlash</p>
+            <p><strong>O'quv yili:</strong> 2025/2026, Semestr 1</p>
+        </div>
+
+        <div class="schedule-container">
+            <!-- Left Section -->
+            <div class="schedule-section">
+                <div class="section-title">Hafta birinchi yarmi</div>
+                <div class="day-schedule">
+                    <!-- Dushanba -->
+                    <div class="day">
+                        <div class="day-name">Dushanba</div>
+                        <div class="lesson">
+                            <div class="lesson-time">1-para (08:30–09:50)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Tarix</div>
+                                <div class="lesson-teacher">S. Uralboyev (305-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">2-para (09:55–11:15)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Chet tili</div>
+                                <div class="lesson-teacher">N. Chakkanova (302-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">3-para (11:35–12:55)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Informatika va AT</div>
+                                <div class="lesson-teacher">O. Muhammadjonova (303-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">4-para (13:00–14:20)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Informatika va AT</div>
+                                <div class="lesson-teacher">D. Karimov / Sh. Nurmamatov (309-xona)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seshanba -->
+                    <div class="day">
+                        <div class="day-name">Seshanba</div>
+                        <div class="lesson">
+                            <div class="lesson-time">1-para (08:30–09:50)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Dasturlash asoslari</div>
+                                <div class="lesson-teacher">A. Mamatqulov (308-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">2-para (09:55–11:15)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Fizika</div>
+                                <div class="lesson-teacher">J. Xasanov (303-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">3-para (11:35–12:55)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Chet tili</div>
+                                <div class="lesson-teacher">N. Chakkanova (302-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">4-para (13:00–14:20)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Chet tili</div>
+                                <div class="lesson-teacher">O. Muhammadjonova (303-xona)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chorshanba -->
+                    <div class="day">
+                        <div class="day-name">Chorshanba</div>
+                        <div class="lesson">
+                            <div class="lesson-time">1-para (08:30–09:50)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Ona tili</div>
+                                <div class="lesson-teacher">N. Yusupova (304-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">2-para (09:55–11:15)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Chet tili</div>
+                                <div class="lesson-teacher">N. Chakkanova (302-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">3-para (11:35–12:55)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Rus tili</div>
+                                <div class="lesson-teacher">O. Muhammadjonova (303-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">4-para (13:00–14:20)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Rus tili</div>
+                                <div class="lesson-teacher">Sh. Faxriddova (218-xona)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section -->
+            <div class="schedule-section">
+                <div class="section-title">Hafta ikkinchi yarmi</div>
+                <div class="day-schedule">
+                    <!-- Payshanba -->
+                    <div class="day">
+                        <div class="day-name">Payshanba</div>
+                        <div class="lesson">
+                            <div class="lesson-time">1-para (08:30–09:50)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Chet tili</div>
+                                <div class="lesson-teacher">O. Muhammadjonova (303-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">2-para (09:55–11:15)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Matematik modellashtirish</div>
+                                <div class="lesson-teacher">O. Muhammadjonova (309-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">3-para (11:35–12:55)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Algoritmlar nazariyasi</div>
+                                <div class="lesson-teacher">Sh. Nurmamatov (308-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">4-para (13:00–14:20)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Jismoniy tarbiya</div>
+                                <div class="lesson-teacher">S. Pardayev (Sport zal)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Juma -->
+                    <div class="day">
+                        <div class="day-name">Juma</div>
+                        <div class="lesson">
+                            <div class="lesson-time">1-para (08:30–09:50)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Matematika</div>
+                                <div class="lesson-teacher">J. Bozorov (305-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">2-para (09:55–11:15)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Ma'lumotlar bazasi</div>
+                                <div class="lesson-teacher">I. Quramboyev (302-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">3-para (11:35–12:55)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Mehnat muhofazasi</div>
+                                <div class="lesson-teacher">I. Quramboyev (103-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">4-para (13:00–14:20)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Mehnat muhofazasi</div>
+                                <div class="lesson-teacher">I. Quramboyev (103-xona)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shanba -->
+                    <div class="day">
+                        <div class="day-name">Shanba</div>
+                        <div class="lesson">
+                            <div class="lesson-time">1-para (08:30–09:50)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Axborot texnologiyalari asoslari</div>
+                                <div class="lesson-teacher">I. Quramboyev (302-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">2-para (09:55–11:15)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Axborot texnologiyalari asoslari</div>
+                                <div class="lesson-teacher">I. Quramboyev (302-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">3-para (11:35–12:55)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Ma'lumotlar bazasi</div>
+                                <div class="lesson-teacher">I. Quramboyev (302-xona)</div>
+                            </div>
+                        </div>
+                        <div class="lesson">
+                            <div class="lesson-time">4-para (13:00–14:20)</div>
+                            <div class="lesson-info">
+                                <div class="lesson-subject">Dasturlash asoslari / Algoritmlar nazariyasi</div>
+                                <div class="lesson-teacher">A. Mamatqulov (305) / Sh. Nurmamatov (308)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 KT 07-25 Guruhi | Dasturiy injiniringi yo'nalishi</p>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const lessons = document.querySelectorAll('.lesson');
+            
+            // Touch and click handling for lessons
+            lessons.forEach(lesson => {
+                lesson.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const subject = this.querySelector('.lesson-subject').textContent;
+                    const teacher = this.querySelector('.lesson-teacher').textContent;
+                    const time = this.querySelector('.lesson-time').textContent;
+                    
+                    // For mobile devices, show a nicer modal-like alert
+                    if (window.innerWidth <= 768) {
+                        showMobileAlert(subject, teacher, time);
+                    } else {
+                        alert(`📚 Dars: ${subject}\n👨‍🏫 O'qituvchi: ${teacher}\n⏰ Vaqt: ${time}`);
+                    }
+                });
+
+                // Add touch feedback for mobile
+                lesson.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+                
+                lesson.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Mobile-friendly alert function
+            function showMobileAlert(subject, teacher, time) {
+                const alertDiv = document.createElement('div');
+                alertDiv.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0,0,0,0.5);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 9999;
+                        padding: 20px;
+                        box-sizing: border-box;
+                    ">
+                        <div style="
+                            background: white;
+                            padding: 25px;
+                            border-radius: 15px;
+                            max-width: 350px;
+                            width: 100%;
+                            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+                            text-align: center;
+                            animation: slideIn 0.3s ease;
+                        ">
+                            <h3 style="margin: 0 0 15px 0; color: #007bff; font-size: 18px;">📚 ${subject}</h3>
+                            <p style="margin: 10px 0; color: #666; font-size: 15px;">👨‍🏫 ${teacher}</p>
+                            <p style="margin: 10px 0; color: #666; font-size: 15px;">⏰ ${time}</p>
+                            <button onclick="this.closest('div').parentNode.remove()" style="
+                                background: linear-gradient(45deg, #007bff, #0056b3);
+                                color: white;
+                                border: none;
+                                padding: 12px 25px;
+                                border-radius: 25px;
+                                font-size: 14px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                margin-top: 15px;
+                                box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+                            ">Yopish</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add slide in animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: scale(0.8); opacity: 0; }
+                        to { transform: scale(1); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                document.body.appendChild(alertDiv);
+                
+                // Close on background click
+                alertDiv.addEventListener('click', function(e) {
+                    if (e.target === alertDiv) {
+                        alertDiv.remove();
+                    }
+                });
+            }
+
+            // Add current time display and week highlighting
+            function updateTime() {
+                const now = new Date();
+                const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                const dayNames = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
+                
+                // Highlight current day
+                document.querySelectorAll('.day-name').forEach((dayElement, index) => {
+                    const dayText = dayElement.textContent;
+                    if (dayNames[currentDay] === dayText) {
+                        dayElement.style.background = 'linear-gradient(45deg, #ff6b6b, #ffa726)';
+                        dayElement.style.color = 'white';
+                        dayElement.style.padding = '8px 15px';
+                        dayElement.style.borderRadius = '20px';
+                        dayElement.style.marginBottom = '20px';
+                        dayElement.innerHTML = `🔥 ${dayText} (Bugun)`;
+                    }
+                });
+                
+                console.log(`Hozirgi vaqt: ${now.toLocaleDateString('uz-UZ')}, ${now.toLocaleTimeString('uz-UZ')}`);
+            }
+            
+            updateTime();
+            setInterval(updateTime, 60000); // Update every minute
+
+            // Add swipe functionality for mobile
+            let startX, startY, endX, endY;
+            
+            document.addEventListener('touchstart', function(e) {
+                startX = e.changedTouches[0].screenX;
+                startY = e.changedTouches[0].screenY;
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                endX = e.changedTouches[0].screenX;
+                endY = e.changedTouches[0].screenY;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const diffX = startX - endX;
+                const diffY = startY - endY;
+                
+                // Minimum swipe distance
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                    if (diffX > 0) {
+                        // Swiped left - could add functionality here
+                        console.log('Swiped left');
+                    } else {
+                        // Swiped right - could add functionality here  
+                        console.log('Swiped right');
+                    }
+                }
+            }
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    // Close any open modals
+                    const modals = document.querySelectorAll('[style*="z-index: 9999"]');
+                    modals.forEach(modal => modal.remove());
+                }
+            });
+
+            // Responsive font size adjustment
+            function adjustFontSize() {
+                const screenWidth = window.innerWidth;
+                const container = document.querySelector('.container');
+                
+                if (screenWidth < 360) {
+                    container.style.fontSize = '13px';
+                } else if (screenWidth < 400) {
+                    container.style.fontSize = '14px';
+                } else {
+                    container.style.fontSize = '15px';
+                }
+            }
+            
+            adjustFontSize();
+            window.addEventListener('resize', adjustFontSize);
+        });
+    </script>
+</body>
+</html>
